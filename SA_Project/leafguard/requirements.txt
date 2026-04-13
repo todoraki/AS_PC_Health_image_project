@@ -1,0 +1,20 @@
+# ── Backend (FastAPI) ────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# ── ML / Data ───────────────────────────────────────────────────
+numpy==1.26.4
+Pillow==11.1.0
+joblib==1.4.2
+scikit-learn==1.6.1
+
+# ── CNN model loading (required for AS/PC hybrid disease models) ─
+# Install AFTER confirming your Python version is supported:
+#   pip install tensorflow          (GPU)
+#   pip install tensorflow-cpu      (CPU only, lighter)
+tensorflow>=2.16.0
+
+# ── Testing ─────────────────────────────────────────────────────
+pytest==8.3.4
+httpx==0.28.1

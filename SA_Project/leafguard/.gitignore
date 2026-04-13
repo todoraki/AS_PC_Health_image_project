@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+*.pkl
+
+# Trained model binaries (too large for GitHub — add manually or use Git LFS)
+*.h5
+*.keras
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Env
+.env
