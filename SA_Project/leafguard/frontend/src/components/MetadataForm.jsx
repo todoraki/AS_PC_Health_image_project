@@ -69,78 +69,126 @@ export function buildSubmittableMetadata(metadata) {
   return out;
 }
 
+const GROUPS = [
+  {
+    title: "Environmental Stress",
+    icon: "🧪",
+    fields: [
+      { key: "Heat", label: "🔥 Heat" },
+      { key: "Drought", label: "💧 Drought" },
+      { key: "Heat_Drought", label: "🔥+💧 Heat + Drought" },
+    ],
+  },
+  {
+    title: "Leaf Condition",
+    icon: "🌿",
+    fields: [
+      { key: "Spots", label: "Spots" },
+      { key: "Damage", label: "Damage", options: ["no", "yes"] },
+      { key: "Decolourization", label: "Decolourization" },
+    ],
+  },
+  {
+    title: "Experiment Info",
+    icon: "🧪",
+    fields: [
+      { key: "Artefacts", label: "Artefacts" },
+      { key: "Control", label: "Control" },
+      { key: "Week", label: "Week", type: "number" },
+    ],
+  },
+];
+
 // ── Component ────────────────────────────────────────────────────
 function MetadataForm({ metadata, onChange }) {
   function set(key, value) {
     onChange({ ...metadata, [key]: value });
   }
 
+  function renderBinaryControl(fieldKey, fieldLabel, options = ["no", "yes"]) {
+    return (
+      <div className="control-row" key={fieldKey}>
+        <label className="control-label" htmlFor={`${fieldKey}-${options[0]}`}>
+          {fieldLabel}
+        </label>
+        <div className="binary-toggle" role="group" aria-label={fieldLabel}>
+          {options.map((opt) => (
+            <button
+              key={opt}
+              id={`${fieldKey}-${opt}`}
+              type="button"
+              className={`toggle-pill ${metadata[fieldKey] === opt ? "active" : ""}`}
+              onClick={() => set(fieldKey, opt)}
+            >
+              {opt === "yes"
+                ? "Yes"
+                : opt === "no"
+                ? "No"
+                : "Unknown"}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="card">
+    <div className="card metadata-panel">
       <h2>2. Enter Leaf Metadata</h2>
 
       <p className="meta-hint">
-        Select <strong>Yes</strong> or <strong>No</strong> for each stress
-        condition observed on the leaf.
+        Configure the leaf sample using segmented research controls.
       </p>
 
-      <div className="meta-grid">
-        {/* ── 7 binary Yes/No dropdowns ─────────────────── */}
-        {BINARY_FIELDS.map(({ key, label }) => (
-          <div key={key} className="meta-field">
-            <label htmlFor={key}>{label}</label>
-            <select
-              id={key}
-              value={metadata[key] ?? ""}
-              onChange={(e) => set(key, e.target.value)}
-              className={metadata[key] === "" ? "select-placeholder" : ""}
-            >
-              <option value="" disabled>Select…</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-          </div>
+      <div className="meta-group-grid">
+        {GROUPS.map((group) => (
+          <section key={group.title} className="meta-group-card">
+            <div className="group-title">
+              <span>{group.icon}</span>
+              <h3>{group.title}</h3>
+            </div>
+
+            <div className="group-separator" />
+
+            <div className="group-controls">
+              {group.fields.map((field) => {
+                if (field.type === "number") {
+                  return (
+                    <div className="control-row" key={field.key}>
+                      <label className="control-label" htmlFor="Week">
+                        Week (1-52)
+                      </label>
+                      <input
+                        id="Week"
+                        className="week-input"
+                        type="number"
+                        min={1}
+                        max={52}
+                        step={1}
+                        placeholder="e.g. 14"
+                        value={metadata["Week"] ?? ""}
+                        onChange={(e) => set("Week", e.target.value)}
+                      />
+                    </div>
+                  );
+                }
+
+                if (field.options) {
+                  return renderBinaryControl(field.key, field.label, field.options);
+                }
+
+                return renderBinaryControl(field.key, field.label);
+              })}
+            </div>
+          </section>
         ))}
-
-        {/* ── Damage (optional / unknown allowed) ───────── */}
-        <div className="meta-field">
-          <label htmlFor="Damage">Damage</label>
-          <select
-            id="Damage"
-            value={metadata["Damage"] ?? ""}
-            onChange={(e) => set("Damage", e.target.value)}
-            className={metadata["Damage"] === "" ? "select-placeholder" : ""}
-          >
-            <option value="" disabled>Select…</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-            <option value="unknown">Unknown / Not observed</option>
-          </select>
-        </div>
-
-        {/* ── Week ──────────────────────────────────────── */}
-        <div className="meta-field">
-          <label htmlFor="Week">Week (1 – 52)</label>
-          <input
-            id="Week"
-            type="number"
-            min={1}
-            max={52}
-            step={1}
-            placeholder="e.g. 14"
-            value={metadata["Week"] ?? ""}
-            onChange={(e) => set("Week", e.target.value)}
-          />
-        </div>
       </div>
 
-      {/* Damage_missing info line */}
-      {metadata["Damage"] === "unknown" && (
-        <p className="meta-hint warn">
-          Damage marked as Unknown → <code>Damage_missing = 1</code> will be
-          sent to the model automatically.
-        </p>
-      )}
+      <div className="lab-legend">
+        <span className="legend-dot" />
+        <span>Hover controls for interaction feedback</span>
+      </div>
+
     </div>
   );
 }

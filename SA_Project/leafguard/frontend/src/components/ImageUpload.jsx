@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 
-function ImageUpload({ onImageSelect, selectedFile }) {
+function ImageUpload({ onImageSelect, selectedFile, isAnalyzing = false }) {
   const inputRef = useRef();
   const [dragOver, setDragOver] = useState(false);
 
@@ -18,8 +18,11 @@ function ImageUpload({ onImageSelect, selectedFile }) {
   }
 
   return (
-    <div className="card">
+    <div className="card ai-input-card">
       <h2>1. Upload Leaf Image</h2>
+      <p className="section-caption">
+        Provide a clear leaf photograph for grayscale feature extraction.
+      </p>
 
       <div
         className={`upload-zone ${dragOver ? "drag-over" : ""}`}
@@ -37,20 +40,37 @@ function ImageUpload({ onImageSelect, selectedFile }) {
           accept="image/jpeg,image/png,image/webp"
           onChange={(e) => handleFile(e.target.files[0])}
         />
-        <div className="icon">📷</div>
+        <div className="upload-glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+            <path d="M9 4h6l1 3h2a2 2 0 012 2v8a3 3 0 01-3 3H7a3 3 0 01-3-3V9a2 2 0 012-2h2l1-3zm3 4a5 5 0 100 10 5 5 0 000-10zm0 2.2a2.8 2.8 0 110 5.6 2.8 2.8 0 010-5.6z" />
+          </svg>
+        </div>
         <p>
           {selectedFile
             ? selectedFile.name
             : "Click or drag & drop a leaf image here"}
         </p>
+        <small>Accepted: JPG, PNG, WEBP</small>
       </div>
 
       {selectedFile && (
-        <div className="image-preview">
+        <div className="image-preview reveal-in">
           <img
             src={URL.createObjectURL(selectedFile)}
             alt="Leaf preview"
           />
+        </div>
+      )}
+
+      {selectedFile && isAnalyzing && (
+        <div className="analyze-placeholder" aria-live="polite">
+          <div className="placeholder-top">
+            <span className="pulse-dot" />
+            <span>Model analyzing...</span>
+          </div>
+          <div className="progress-track">
+            <div className="progress-fill" />
+          </div>
         </div>
       )}
     </div>

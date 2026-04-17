@@ -60,24 +60,29 @@ function Home() {
   }
 
   return (
-    <>
+    <section className="workflow-stack">
       {error && <div className="error-msg">{error}</div>}
 
-      <ImageUpload onImageSelect={setImageFile} selectedFile={imageFile} />
+      <ImageUpload
+        onImageSelect={setImageFile}
+        selectedFile={imageFile}
+        isAnalyzing={loading}
+      />
 
       <MetadataForm metadata={metadata} onChange={setMetadata} />
 
       <button
-        className="submit-btn"
+        className={`submit-btn ${loading ? "is-loading" : ""}`}
         onClick={handleSubmit}
         disabled={loading}
+        aria-busy={loading}
       >
         {loading ? (
           <>
-            <span className="spinner" /> Analysing…
+            <span className="spinner" /> Analyzing...
           </>
         ) : (
-          "Analyse Leaf"
+          "Analyze Leaf"
         )}
       </button>
 
@@ -85,14 +90,13 @@ function Home() {
 
       {result && (
         <button
-          className="submit-btn"
-          style={{ background: "#888", marginTop: "0.5rem" }}
+          className="submit-btn secondary-btn"
           onClick={handleReset}
         >
-          Analyse Another Leaf
+          Analyze Another Leaf
         </button>
       )}
-    </>
+    </section>
   );
 }
 

@@ -1,4 +1,6 @@
-/* ── Reset & base ─────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap");
+
+/* Reset and base */
 *,
 *::before,
 *::after {
@@ -8,11 +10,19 @@
 }
 
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: #f0f7f4;
-  color: #1b1b1b;
-  line-height: 1.6;
+  font-family: "Inter", "Poppins", "Segoe UI", sans-serif;
+  background: #f8fffb;
+  color: #1b332a;
+  line-height: 1.55;
   min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Poppins", "Inter", sans-serif;
 }
 
 #root {
