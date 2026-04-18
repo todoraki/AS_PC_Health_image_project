@@ -1,13 +1,29 @@
 import React, { useRef, useState } from "react";
 
-function ImageUpload({ onImageSelect, selectedFile, isAnalyzing = false }) {
+const SUPPORTED_FILENAME_PATTERN = /^(ASP|PCP)\d{5}\.JPG$/;
+
+function ImageUpload({
+  onImageSelect,
+  onInvalidImage,
+  selectedFile,
+  isAnalyzing = false,
+}) {
   const inputRef = useRef();
   const [dragOver, setDragOver] = useState(false);
 
   function handleFile(file) {
-    if (file && file.type.startsWith("image/")) {
-      onImageSelect(file);
+    if (!file || !file.type.startsWith("image/")) {
+      return;
     }
+
+    if (!SUPPORTED_FILENAME_PATTERN.test(file.name)) {
+      if (typeof onInvalidImage === "function") {
+        onInvalidImage();
+      }
+      return;
+    }
+
+    onImageSelect(file);
   }
 
   function handleDrop(e) {
@@ -20,9 +36,6 @@ function ImageUpload({ onImageSelect, selectedFile, isAnalyzing = false }) {
   return (
     <div className="card ai-input-card">
       <h2>1. Upload Leaf Image</h2>
-      <p className="section-caption">
-        Provide a clear leaf photograph for grayscale feature extraction.
-      </p>
 
       <div
         className={`upload-zone ${dragOver ? "drag-over" : ""}`}

@@ -21,7 +21,7 @@ function ResultDisplay({ result }) {
           <div className="prediction-head">
             <div>
               <p className="label">Species Prediction</p>
-              <h3 className="value">🌿 {species.name}</h3>
+              <h3 className="value">{species.name}</h3>
             </div>
             <div
               className="ring-progress"
@@ -50,7 +50,7 @@ function ResultDisplay({ result }) {
           <div className="prediction-head">
             <div>
               <p className="label">Health Status</p>
-              <h3 className="value">❤️ {health.status}</h3>
+              <h3 className="value">{health.status}</h3>
             </div>
             <div
               className="ring-progress"

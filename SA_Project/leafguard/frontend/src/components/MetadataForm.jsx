@@ -74,9 +74,9 @@ const GROUPS = [
     title: "Environmental Stress",
     icon: "🧪",
     fields: [
-      { key: "Heat", label: "🔥 Heat" },
-      { key: "Drought", label: "💧 Drought" },
-      { key: "Heat_Drought", label: "🔥+💧 Heat + Drought" },
+      { key: "Heat", label: "Heat" },
+      { key: "Drought", label: "Drought" },
+      { key: "Heat_Drought", label: "Heat + Drought" },
     ],
   },
   {
@@ -136,10 +136,6 @@ function MetadataForm({ metadata, onChange }) {
     <div className="card metadata-panel">
       <h2>2. Enter Leaf Metadata</h2>
 
-      <p className="meta-hint">
-        Configure the leaf sample using segmented research controls.
-      </p>
-
       <div className="meta-group-grid">
         {GROUPS.map((group) => (
           <section key={group.title} className="meta-group-card">
@@ -182,11 +178,6 @@ function MetadataForm({ metadata, onChange }) {
             </div>
           </section>
         ))}
-      </div>
-
-      <div className="lab-legend">
-        <span className="legend-dot" />
-        <span>Hover controls for interaction feedback</span>
       </div>
 
     </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import bitsLogo from "../assets/bits_logo.png";
 
 function Header() {
   return (
@@ -14,13 +15,17 @@ function Header() {
       </div>
 
       <div className="hero-content">
-        <span className="hero-badge">Research Prototype</span>
-        <div className="header-kicker">AI + Biology + Research Lab</div>
-        <h1>LeafGuard</h1>
-        <p>
-          AI-powered Plant Disease Detection for Acacia senegal &amp; Prosopis
-          cineraria
-        </p>
+        <span className="hero-badge" aria-label="Software Innovations Lab BITS AI and Biology">
+          <img className="lab-logo" src={bitsLogo} alt="BITS logo" />
+          <span className="lab-copy">
+            <span className="lab-title">Software Innovations Lab BITS</span>
+            <span className="lab-subtitle">AI + Biology</span>
+          </span>
+        </span>
+        <h1>
+          LeafGuard: AI-powered Plant Disease Detection for Acacia Senegal and
+          Prosopis Cineraria
+        </h1>
       </div>
     </header>
   );

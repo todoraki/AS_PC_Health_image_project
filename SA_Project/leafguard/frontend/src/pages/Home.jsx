@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageUpload from "../components/ImageUpload.jsx";
 import MetadataForm, {
   emptyMetadata,
@@ -8,12 +8,46 @@ import MetadataForm, {
 import ResultDisplay from "../components/ResultDisplay.jsx";
 import { predictDisease } from "../services/api.js";
 
+const SUPPORTED_FILENAME_PATTERN = /^(ASP|PCP)\d{5}\.JPG$/;
+const ERROR_DISMISS_MS = 4000;
+
 function Home() {
   const [imageFile, setImageFile] = useState(null);
   const [metadata, setMetadata] = useState(emptyMetadata());
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [metadataVisible, setMetadataVisible] = useState(true);
+
+  useEffect(() => {
+    if (!error) {
+      return undefined;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setError(null);
+    }, ERROR_DISMISS_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [error]);
+
+  function isSupportedFilename(filename) {
+    return SUPPORTED_FILENAME_PATTERN.test(filename);
+  }
+
+  function handleImageSelect(file) {
+    setImageFile(file);
+    if (file) {
+      setError(null);
+    }
+  }
+
+  function handleInvalidImage() {
+    setImageFile(null);
+    setError(
+      "Uploaded species is out of model scope. Please upload either Acacia Senegal (AS) or Prosopis Cineraria (PC) plant images."
+    );
+  }
 
   function isFormValid() {
     return imageFile !== null && isMetadataComplete(metadata);
@@ -25,6 +59,12 @@ function Home() {
 
     if (!imageFile) {
       setError("Please upload a leaf image.");
+      return;
+    }
+    if (!isSupportedFilename(imageFile.name)) {
+      setError(
+        "Uploaded species is out of model scope. Please upload either Acacia Senegal (AS) or Prosopis Cineraria (PC) plant images."
+      );
       return;
     }
     if (!isMetadataComplete(metadata)) {
@@ -41,12 +81,14 @@ function Home() {
 
     const numericMeta = buildSubmittableMetadata(metadata);
 
+    setMetadataVisible(false);
     setLoading(true);
     try {
       const resp = await predictDisease(imageFile, numericMeta);
       setResult(resp.data);
     } catch (err) {
       setError(err.message);
+      setMetadataVisible(true);
     } finally {
       setLoading(false);
     }
@@ -57,45 +99,71 @@ function Home() {
     setMetadata(emptyMetadata());
     setResult(null);
     setError(null);
+    setMetadataVisible(true);
   }
 
   return (
-    <section className="workflow-stack">
-      {error && <div className="error-msg">{error}</div>}
+    <section className="workspace-split">
+      <div className="input-column">
+        {error && <div className="error-msg">{error}</div>}
 
-      <ImageUpload
-        onImageSelect={setImageFile}
-        selectedFile={imageFile}
-        isAnalyzing={loading}
-      />
+        <ImageUpload
+          onImageSelect={handleImageSelect}
+          onInvalidImage={handleInvalidImage}
+          selectedFile={imageFile}
+          isAnalyzing={loading}
+        />
 
-      <MetadataForm metadata={metadata} onChange={setMetadata} />
-
-      <button
-        className={`submit-btn ${loading ? "is-loading" : ""}`}
-        onClick={handleSubmit}
-        disabled={loading}
-        aria-busy={loading}
-      >
-        {loading ? (
-          <>
-            <span className="spinner" /> Analyzing...
-          </>
+        {metadataVisible ? (
+          <MetadataForm metadata={metadata} onChange={setMetadata} />
         ) : (
-          "Analyze Leaf"
+          <div className="card meta-collapsed">
+            <h2>2. Leaf Metadata</h2>
+            <button
+              type="button"
+              className="link-btn"
+              onClick={() => setMetadataVisible(true)}
+            >
+              Show metadata controls
+            </button>
+          </div>
         )}
-      </button>
 
-      <ResultDisplay result={result} />
-
-      {result && (
         <button
-          className="submit-btn secondary-btn"
-          onClick={handleReset}
+          className={`submit-btn ${loading ? "is-loading" : ""}`}
+          onClick={handleSubmit}
+          disabled={loading}
+          aria-busy={loading}
         >
-          Analyze Another Leaf
+          {loading ? (
+            <>
+              <span className="spinner" /> Analyzing...
+            </>
+          ) : (
+            "Analyze Leaf"
+          )}
         </button>
-      )}
+      </div>
+
+      <div className="result-column">
+        {result ? (
+          <ResultDisplay result={result} />
+        ) : (
+          <div className="card result-placeholder">
+            <h2>AI Prediction Dashboard</h2>
+            <p>
+              Prediction cards appear here after you upload an image and run
+              analysis.
+            </p>
+          </div>
+        )}
+
+        {result && (
+          <button className="submit-btn secondary-btn" onClick={handleReset}>
+            Analyze Another Leaf
+          </button>
+        )}
+      </div>
     </section>
   );
 }

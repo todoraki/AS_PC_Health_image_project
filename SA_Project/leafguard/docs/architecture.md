@@ -3,7 +3,7 @@
 ## 1. Overview
 
 LeafGuard is a plant disease detection platform for **Acacia Senegal (AS)** and
-**Prosopis Cineraria (PC)**.  A user uploads a leaf image together with 10
+**Prosopis Cineraria (PC)**.  A user uploads a leaf image together with 9
 morphological / visual metadata measurements.  The system first classifies the
 species (AS or PC) and then predicts whether the leaf is **Healthy** or
 **Unhealthy**.
